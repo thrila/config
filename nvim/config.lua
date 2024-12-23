@@ -3,10 +3,16 @@
 -- Video Tutorials: https://www.youtube.com/watch?v=sFA9kX-Ud_c&list=PLhoH5vyxr6QqGu0i7tt_XoVK9v-KvZ3m6
 -- Forum: https://www.reddit.com/r/lunarvim/
 -- Discord: https://discord.com/invite/Xb9B4Ny
+
+
+
 vim.opt.relativenumber = true      -- relative line numbers
 lvim.format_on_save.enabled = true -- format on save
-lvim.transparent_window = true     -- make window transparent
+-- lvim.transparent_window = true                  -- make window transparent
 lvim.colorscheme = "tokyonight"
+lvim.builtin.nvimtree.setup.view.side = "right" -- file nav to the right
+
+
 
 lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
 lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
@@ -17,32 +23,54 @@ lvim.plugins = {
     "wakatime/vim-wakatime"
   },
   { "folke/tokyonight.nvim" },
-  { 'arcticicestudio/nord-vim' },
-
-  "simrat39/rust-tools.nvim",
+  { "EdenEast/nightfox.nvim" },
   {
-    "saecki/crates.nvim",
-    version = "v0.3.0",
-    dependencies = { "nvim-lua/plenary.nvim" },
+    "windwp/nvim-ts-autotag",
     config = function()
-      require("crates").setup {
-        null_ls = {
-          enabled = true,
-          name = "crates.nvim",
-        },
-        popup = {
-          border = "rounded",
-        },
-      }
+      require("nvim-ts-autotag").setup()
     end,
   },
   {
-    "j-hui/fidget.nvim",
+    "folke/todo-comments.nvim",
+    event = "BufRead",
     config = function()
-      require("fidget").setup()
+      require("todo-comments").setup()
     end,
   },
 }
+
+
+local formatters = require "lvim.lsp.null-ls.formatters"
+formatters.setup {
+  {
+    name = "prettier",
+    ---@usage arguments to pass to the formatter
+    -- these cannot contain whitespace
+    -- options such as `--line-width 80` become either `{"--line-width", "80"}` or `{"--line-width=80"}`
+    args = { "--print-width", "100" },
+    ---@usage only start in these filetypes, by default it will attach to all filetypes it supports
+    filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+  },
+}
+-- set deno
+lvim.lsp.automatic_configuration.skipped_servers = vim.tbl_filter(function(server)
+  return server ~= "denols"
+end, lvim.lsp.automatic_configuration.skipped_servers)
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "tsserver" })
+local nvim_lsp = require("lspconfig")
+
+local denoopts = {
+  root_dir = nvim_lsp.util.root_pattern("deno.json", "deno.jsonc")
+}
+
+local tsopts = {
+  root_dir = nvim_lsp.util.root_pattern("package.json"),
+  single_file_support = false
+}
+
+local lvim_manager = require("lvim.lsp.manager")
+lvim_manager.setup("denols", denoopts)
+lvim_manager.setup("tsserver", tsopts)
 
 -- logo
 lvim.builtin.alpha.dashboard.section.header.val = {
@@ -56,87 +84,3 @@ lvim.builtin.alpha.dashboard.section.header.val = {
   "╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═════╝ ╚══════╝ ╚╝╚═══╝  ╚══╝╚══╝ ╚═╝╚═╝  ╚═╝╚══════╝╚═════╝ ",
   " ",
 }
-
--- rust support
--- if you don't want all the parsers change this to a table of the ones you want
-lvim.builtin.treesitter.ensure_installed = {
-  "lua",
-  "rust",
-  "toml",
-}
-
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "rust_analyzer" })
-
-local mason_path = vim.fn.glob(vim.fn.stdpath "data" .. "/mason/")
-
-local codelldb_path = mason_path .. "bin/codelldb"
-local liblldb_path = mason_path .. "packages/codelldb/extension/lldb/lib/liblldb"
-local this_os = vim.loop.os_uname().sysname
-
--- The path in windows is different
-if this_os:find "Windows" then
-  codelldb_path = mason_path .. "packages\\codelldb\\extension\\adapter\\codelldb.exe"
-  liblldb_path = mason_path .. "packages\\codelldb\\extension\\lldb\\bin\\liblldb.dll"
-else
-  -- The liblldb extension is .so for linux and .dylib for macOS
-  liblldb_path = liblldb_path .. (this_os == "Linux" and ".so" or ".dylib")
-end
-
-pcall(function()
-  require("rust-tools").setup {
-    tools = {
-      executor = require("rust-tools/executors").termopen, -- can be quickfix or termopen
-      reload_workspace_from_cargo_toml = true,
-      runnables = {
-        use_telescope = true,
-      },
-      inlay_hints = {
-        auto = true,
-        only_current_line = false,
-        show_parameter_hints = false,
-        parameter_hints_prefix = "<-",
-        other_hints_prefix = "=>",
-        max_len_align = false,
-        max_len_align_padding = 1,
-        right_align = false,
-        right_align_padding = 7,
-        highlight = "Comment",
-      },
-      hover_actions = {
-        border = "rounded",
-      },
-      on_initialized = function()
-        vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter", "CursorHold", "InsertLeave" }, {
-          pattern = { "*.rs" },
-          callback = function()
-            local _, _ = pcall(vim.lsp.codelens.refresh)
-          end,
-        })
-      end,
-    },
-    dap = {
-      -- adapter= codelldb_adapter,
-      adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path),
-    },
-    server = {
-      on_attach = function(client, bufnr)
-        require("lvim.lsp").common_on_attach(client, bufnr)
-        local rt = require "rust-tools"
-        vim.keymap.set("n", "K", rt.hover_actions.hover_actions, { buffer = bufnr })
-      end,
-
-      capabilities = require("lvim.lsp").common_capabilities(),
-      settings = {
-        ["rust-analyzer"] = {
-          lens = {
-            enable = true,
-          },
-          checkOnSave = {
-            enable = true,
-            command = "clippy",
-          },
-        },
-      },
-    },
-  }
-end)
