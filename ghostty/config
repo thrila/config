@@ -1,0 +1,27 @@
+
+theme = tokyonight
+font-family = "JetBrains Mono Nerd Font"
+font-family-bold = "JetBrains Mono Nerd Font Bold"
+font-family-italic = "Caskaydia Mono Nerd Font"
+font-family-bold-italic = "Caskaydia Mono Nerd Font Bold"
+font-size = 14.0
+shell-integration = zsh
+
+cursor-style = block
+background-opacity = 0.85
+background-blur-radius = 90
+
+gtk-titlebar = false
+window-decoration = false
+window-padding-x = 4
+window-padding-y = 4
+window-height = 100
+window-width = 100
+window-save-state = always
+
+keybind = shift+ctrl+h=new_split:left
+keybind = shift+ctrl+k=new_split:up
+keybind = shift+ctrl+j=new_split:down
+keybind = shift+ctrl+l=new_split:right
+
+
