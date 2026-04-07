@@ -1,5 +1,6 @@
--- logo
-lvim.builtin.alpha.dashboard.section.header.val = {
+local M = {}
+
+M.header = {
   " ",
   " ",
   " █████╗ ██████╗  ██████╗ █████╗ ██████╗ ███████╗ ██████╗ ██╗    ██╗██╗██████╗ ███████╗██████╗ ",
@@ -10,3 +11,11 @@ lvim.builtin.alpha.dashboard.section.header.val = {
   "╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═════╝ ╚══════╝ ╚╝╚═══╝  ╚══╝╚══╝ ╚═╝╚═╝  ╚═╝╚══════╝╚═════╝ ",
   " ",
 }
+
+function M.footer()
+  return {
+    "こんにちは ジュジュ、ただいまの時刻は " .. os.date("%H:%M") .. " です。",
+  }
+end
+
+return M
