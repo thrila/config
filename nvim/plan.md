@@ -96,6 +96,3 @@ Redesign a **single Neovim instance** optimized for coding, professional documen
 * Users can replace ASCII art in the dashboard for personal branding
 * Shell integration ensures consistent terminal behavior on both Windows and Linux
 
-REMEMBER SOC
-I want the text editor to look like its in zen mode all the time.
-codex resume 019d69c0-7c1b-7401-9628-0f50ce7771fa
