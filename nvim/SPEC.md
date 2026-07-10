@@ -2,219 +2,218 @@
 
 ## Purpose
 
-This config is a standard Neovim setup structured like `igmrrf/dotfiles/.config/nvim`, but tuned around your brief:
+Zen-mode Neovim. Transparent, minimal, fast. Coding and prose writing with zero visual noise.
 
-- Gruvbox only
-- transparent UI
-- coding plus prose writing
+- transparent UI — no backgrounds, just code
 - which-key and Telescope for discovery
 - dashboard start screen
 - Harpoon for fast file switching
-- PowerShell on Windows, Fish on Linux
 - Markdown and Typst comfort settings
-- no JavaScript debugging stack
 
 ## Layout
 
-- `init.lua`: loads the core config modules
-- `lua/config`: options, keymaps, LSP, autocmds, commands, logo, lazy bootstrap
-- `lua/plugins`: plugin specs grouped by purpose
-- `after/ftplugin`: filetype-specific reading/writing behavior
+```
+init.lua              → loads config modules
+lua/config/           → options, keymaps, LSP, autocmds, commands, terminal, build, logo
+lua/plugins/          → plugin specs grouped by purpose
+after/ftplugin/       → filetype-specific behavior
+```
 
 ## Core Plugins
 
-- `lazy.nvim`: plugin manager
-- `gruvbox.nvim`: colorscheme
-- `which-key.nvim`: discover mappings with `<leader>`
-- `telescope.nvim`: find files, grep, symbols, commands, keymaps
-- `dashboard-nvim`: startup screen with the ASCII logo
-- `harpoon`: pinned file jumping
-- `no-neck-pain.nvim`: always-on centered layout for a permanent zen feel
-- `venv-selector.nvim`: Python virtual environment switching and activation
-- `nvim-treesitter`: highlighting and folding
-- `mason.nvim` + `mason-lspconfig.nvim` + `nvim-lspconfig`: language servers
-- `nvim-cmp` + `LuaSnip`: completion and snippets
-- `conform.nvim`: formatting
-- `vim-markdown` + `markdown-preview.nvim`: Markdown workflow
-- `typst.vim`: Typst support
-- `neotest`: test runner
-- `Comment.nvim`: comment toggling
-- `nvim-notify`: notifications
-- `vim-wakatime`: activity tracking
+| Purpose                       | Plugin                                        |
+| ----------------------------- | --------------------------------------------- |
+| Plugin manager                | `lazy.nvim`                                   |
+| Colorscheme                   | `guts.nvim` (transparent, zen)                |
+| Keybinding hints              | `which-key.nvim`                              |
+| Fuzzy search                  | `telescope.nvim`                              |
+| Start screen                  | `dashboard-nvim`                              |
+| File pinning                  | `harpoon`                                     |
+| Centered layout               | `no-neck-pain.nvim`                           |
+| Sessions                      | `auto-session`                                |
+| Python env switching          | `venv-selector.nvim`                          |
+| Syntax highlighting           | `nvim-treesitter`                             |
+| Language servers              | `mason.nvim` + `mason-lspconfig.nvim` + `nvim-lspconfig` |
+| Completion                    | `nvim-cmp` + `LuaSnip`                        |
+| Formatting                    | `conform.nvim`                                |
+| Markdown                      | `vim-markdown` + `glow.nvim`                  |
+| Typst                         | `typst-preview.nvim`                          |
+| Testing                       | `neotest` (Rust, Python, Haskell, Jest)       |
+| Comments                      | `Comment.nvim`                                |
+| Git UI                        | `gitsigns.nvim` + `lazygit`                   |
+| Notifications                 | `nvim-notify`                                 |
 
 ## First Boot
 
-1. Open Neovim in the real config location.
-2. `lazy.nvim` will install missing plugins.
-3. Run `:Mason` and install anything you want available locally.
-4. If you use Markdown preview, trigger it once with `<leader>mp` so its install step can complete.
-5. Make sure these external tools exist if you want the related features:
+1. Open Neovim — `lazy.nvim` installs everything.
+2. `:Mason` — install any servers you want locally.
+3. Install `glow` for markdown preview: `go install github.com/charmbracelet/glow@latest`
+4. External tools for full features:
 
-- `lazygit`
-- `rg`
-- `fd`
-- `uv`
-- `clangd`
-- `rust-analyzer`
-- `intelephense`
-- `pyright`
-- `typescript-language-server` or Mason-managed `ts_ls`
-- `tinymist`
-- `prettier` or `prettierd`
-- `black` or `ruff`
-- `stylua`
-- `typstyle`
+```
+lazygit  rg  fd  uv  gcc  g++  cargo  ghc  cabal  fourmolu  haskell-language-server  nu
+stylua  rustfmt  ruff  black  prettierd  typstyle  opencode  glow
+```
 
 ## How To Drive It
 
-- Press `<leader>` and wait for which-key if you forget a mapping.
-- Press `<leader>?` for buffer-local keymaps.
-- Use `<leader>;` to return to the dashboard.
-- Use `<leader>ff` to find files and `<leader>fg` to grep text.
-- Use `<leader>fc` for the command board.
-- Use Harpoon when you are bouncing between a small set of files.
-- Use `<leader>gg` for Git through your installed `lazygit` binary.
-- Use `<leader>tt` for a fresh split terminal.
-- Use `<leader>tn` to toggle the always-centered layout.
-- Use `<leader>zz` for an extra temporary focus mode on top.
-- Use `:NvimSpec` or `<leader>Ls` to reopen this sheet.
-- `:term` and `:terminal` are routed to the same split-terminal helper as `<leader>tt`.
+- `<leader>` → wait for which-key popup
+- `<leader>?` → buffer-local keymaps
+- `<leader>;` → dashboard
+- `<leader>ff` / `<leader>fg` → find files / grep
+- `<leader>fc` → command board
+- `<leader>gg` → LazyGit
+- `<leader>oc` → OpenCode
+- `<leader>tt` → new terminal (split)
+- `<leader>tT` → new terminal (current buffer, no split)
+- `<leader>tn` → toggle centered layout
+- `<leader>zz` → zen mode
+- `<leader>ww` → web search (DuckDuckGo)
 
-## LunarVim-Style Keys
+## LSP Keys
 
-These now match the common LunarVim defaults closely:
+- `K` → hover (multi-client, accurate, falls back to diagnostics)
+- `gd` → definition
+- `gD` → declaration
+- `gr` → references
+- `gI` → implementation
+- `gs` → signature help
+- `gl` → line diagnostics
+- `<leader>lr` → rename
+- `<leader>la` → code action
+- `<leader>lf` → format
+- `[d` / `]d` → prev/next diagnostic
 
-- `K`: hover information
-- `gd`: go to definition
-- `gD`: go to declaration
-- `gr`: references
-- `gI`: implementation
-- `gs`: signature help
-- `gl`: line diagnostics
-- `<leader>h`: clear search highlight
-- `<leader>sh`: search help
-- `<leader>sr`: recent files
-- `<leader>sk`: search keymaps
-- `<leader>e`: file explorer
-- `<leader>pS`: plugin manager
-- `<leader>th`: previous tab
-- `<leader>tl`: next tab
-- `<leader>to`: new tab
-- `<leader>tx`: close tab
-- `<leader>vs`: select Python env
-- `<leader>vp`: activate project `.venv`
-- `<leader>vc`: activate cached Python env
-- `<leader>vi`: show current Python env
-- `<leader>vu`: run `uv sync`
-- `<C-h/j/k/l>`: window navigation
-- `<C-Up/Down/Left/Right>`: resize windows
-- `<leader>/`: toggle comment
-- `<A-j>` / `<A-k>`: move lines or selections
-- `<Esc><Esc>` in terminal mode: leave terminal insert mode
+## Build & Run
 
-## Daily Workflow
+All build commands run in a bottom terminal and auto-detect your filetype.
 
-### Navigation
+**Rust:**
+- `<leader>bb` → `cargo build`
+- `<leader>br` → `cargo run`
+- `<leader>bt` → `cargo test`
 
-- `<leader>ff`: files
-- `<leader>fb`: open buffers
-- `<leader>fg`: live grep
-- `<leader>fC`: commands
-- `<leader>fs`: document symbols
-- `<leader>fS`: workspace symbols
-- `<leader>fh`: help tags
+**C:**
+- `<leader>bb` → compile (auto-detects `clang`/`gcc`)
+- `<leader>br` → compile and run
 
-### Tabs
+**C++:**
+- `<leader>bb` → compile (auto-detects `clang++`/`g++`)
+- `<leader>br` → compile and run
 
-- `<leader>th`: previous tab
-- `<leader>tl`: next tab
-- `<leader>to`: open a new tab
-- `<leader>tx`: close the current tab
-- `gt`: next tab
-- `gT`: previous tab
+**Haskell:**
+- `<leader>bb` → build (auto-detects `stack`/`cabal`/`ghc`)
+- `<leader>br` → run
+- `<leader>bt` → test
 
-These work in terminal mode too, so `:term` does not trap you in one tab.
+## Sessions
 
-### Harpoon
+Auto-saves when you quit, auto-restores when you open Neovim in the same directory.
 
-- `<leader>ha`: add current file
-- `<leader>hh`: open Harpoon menu
-- `<leader>1` to `<leader>4`: jump to pinned files
+- `<leader>sr` → search/restore sessions
+- `<leader>sw` → save current session
+- `<leader>sd` → delete session
 
-### Git
+## Terminal
 
-- `<leader>gg`: open LazyGit
+- `<leader>tt` → new split terminal (bottom, 15 lines)
+- `<leader>tT` → new terminal in current buffer (no split)
+- `:TermNew [cmd]` → same as `<leader>tt`
+- `:TermHere [cmd]` → same as `<leader>tT`
+- `:term` / `:terminal` → aliased to `:TermNew`
+- Terminals auto-close when the process exits — no "Process exited 0" noise.
+- `<Esc><Esc>` → leave terminal insert mode
+- `<S-h>` / `<S-l>` → switch buffers from terminal mode
+- Tab keys work in terminal mode too
 
-This opens LazyGit in a fixed bottom split. Quitting LazyGit closes only that split and returns focus to your previous window.
+## Navigation
 
-### Buffers in Terminal Mode
+- `<leader>ff` → files
+- `<leader>fb` → buffers
+- `<leader>fg` → live grep
+- `<leader>fC` → commands
+- `<leader>fs` → document symbols
+- `<leader>fS` → workspace symbols
+- `<leader>fh` → help tags
 
-- `<S-h>`: previous buffer
-- `<S-l>`: next buffer
-- `<leader>bd`: delete current buffer
+## Tabs
 
-These terminal-mode mappings first leave terminal insert mode, so terminal buffers do not trap normal buffer navigation.
+- `<leader>th` / `<leader>tl` → prev/next tab
+- `<leader>to` / `<leader>tx` → new/close tab
+- `gt` / `gT` → next/prev tab (works in terminal mode)
 
-### Centered Editing
+## Harpoon
 
-- The layout now uses `no-neck-pain.nvim` to keep the main editing window centered automatically.
-- It is configured with safe auto-enable on startup so it does not fight the dashboard during launch.
-- `<leader>tn`: toggle the centered layout
-- `<leader>zz`: extra temporary Zen Mode when you want even fewer distractions
+- `<leader>ha` → add file
+- `<leader>hh` → menu
+- `<leader>1` to `<leader>4` → jump to pinned files
 
-### Testing
+## Git
 
-- `<leader>tm`: nearest test
-- `<leader>tf`: current file tests
-- `<leader>ts`: test summary
+- `<leader>gg` → LazyGit (bottom split, auto-closes)
 
-### Python and uv
+## Web Search
 
-- Open a Python file inside a project with `pyproject.toml` or `uv.lock`.
-- If `./.venv` exists, Neovim will auto-activate it for LSP, completion, and new terminal buffers.
-- Use `uv sync` in the project root to create or refresh `./.venv`.
-- `<leader>vp`: force the project-local `./.venv`
-- `<leader>vs`: pick another env manually
-- `<leader>vc`: re-activate a cached env you selected earlier
-- `<leader>vi`: show the active venv and Python path
-- `<leader>vu`: run `uv sync` in a split terminal from the detected project root
+- `<leader>ww` → prompts for a query, opens DuckDuckGo in default browser
+- `:WebSearch query` → same, inline
 
-Recommended `uv` workflow:
+## OpenCode
 
-1. `uv init` once for a new project if needed.
-2. `uv add ...` to add runtime dependencies or `uv add --dev ...` for dev tools.
-3. `uv sync` whenever dependencies or the lockfile change.
-4. Open Neovim from the project root or any file inside it and let the local `./.venv` auto-attach.
+- `<leader>oc` → opens opencode in a bottom terminal
 
-### Formatting
+## Testing
 
-- `<leader>lf`: format via LSP or Conform
-- `:Format`: manual format command
+- `<leader>tm` → nearest test
+- `<leader>tf` → file tests
+- `<leader>ts` → test summary
 
-### LSP
+Adapters: `neotest-rust`, `neotest-python`, `neotest-haskell`, `neotest-jest`
 
-- This setup uses Neovim 0.12 native LSP configuration APIs.
-- PHP uses `intelephense` for completion, hover, and navigation.
-- Rust uses your toolchain `rust-analyzer` from `~/.cargo/bin`, not Mason’s copy.
-- `:checkhealth vim.lsp` or `<leader>li`: inspect LSP health
-- `<leader>lR`: restart LSP clients
+## Python & uv
 
-### Markdown and Typst
+- Auto-detects `./.venv` and activates on file open
+- `<leader>vs` → select env
+- `<leader>vp` → project `.venv`
+- `<leader>vc` → cached env
+- `<leader>vi` → show active env
+- `<leader>vu` → `uv sync`
 
-- Markdown and Typst buffers wrap text and enable spellchecking automatically.
-- Their spell language is pinned to `en_gb`, so regional variants are checked as British English.
-- `<leader>mp`: Markdown preview toggle
+## Formatters
 
-## Shell Behavior
+| Filetype     | Formatter            |
+| ------------ | -------------------- |
+| Rust         | `rustfmt`            |
+| C / C++      | `clang_format`       |
+| Haskell      | `fourmolu`           |
+| Python       | `ruff_format`/`black`|
+| Lua          | `stylua`             |
+| JS/TS/JSON   | `prettierd`/`prettier`|
+| Markdown     | `prettierd`/`prettier`|
+| Typst        | `typstyle`           |
 
-- Windows uses `powershell`, with `cmd` as fallback
-- Linux uses `fish` when available
-- Interactive terminals are opened explicitly, so `:TermNew` uses `powershell -NoLogo -NoExit` on Windows and does not inherit the `:!` command-shell flags.
+`<leader>lf` or `:Format` → format current buffer
+
+## Language Servers
+
+`cssls`, `clangd`, `hls`, `denols`, `intelephense`, `lua_ls`, `marksman`, `pyright`, `rust_analyzer` (from toolchain), `tinymist`, `ts_ls`
+
+## Shell
+
+- Windows: `nushell` (fallback `powershell`, then `cmd`)
+- Linux: `fish` (fallback `$SHELL`)
+
+## Speed
+
+- `vim-wakatime` deferred to `CursorHold` (not startup)
+- `nvim-notify` loads on `VeryLazy`
+- `Comment.nvim`, `gitsigns`, `autopairs`, `todo-comments` all lazy-loaded on file events
+- `mason.nvim` only loads on `:Mason`
+- `no-neck-pain.nvim` loads at startup but defers auto-enable with `safe`
 
 ## Notes
 
-- The background is intentionally transparent now.
-- Full transparency still depends on your terminal emulator allowing window opacity/transparency. Neovim can only clear its own backgrounds.
-- The current line still has a subtle Gruvbox tint so the cursor row remains readable.
-- `legendary.nvim` was not added even though it appeared in the plan, because its upstream repository was archived on April 17, 2025.
-- This config is plain Neovim, not LunarVim. The feel is partially aligned, but the implementation is your own split `lazy.nvim` setup.
+- Background is fully transparent — your terminal emulator provides the color.
+- Statusline uses a custom theme that pulls colors from the active colorscheme (no hardcoded gruvbox).
+- Right side of statusline shows ジュジュ.
+- `legendary.nvim` skipped — upstream archived April 2025.
+- This is plain Neovim, not LunarVim.

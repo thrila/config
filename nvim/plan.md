@@ -5,7 +5,6 @@
 Redesign a **single Neovim instance** optimized for coding, professional document writing, and interactive learning of keybindings and commands. The focus is on:
 
 * Minimalism and readability
-* Single theme (Gruvbox) for comfort
 * OS-specific shell integration
 * Self-documenting keymaps and interactive command board
 * Support for multiple programming and markup languages
@@ -39,12 +38,12 @@ Redesign a **single Neovim instance** optimized for coding, professional documen
 
 ### 3.3 Language Support
 
-* **Programming:** Rust (`rust-analyzer`)[already in toolchain], C/C++ (`clangd`), Python (`pyright`), JS/TS (`ts-go`)
+* **Programming:** Rust (`rust-analyzer`)[already in toolchain], C/C++ (`clangd`), Python (`pyright`), JS/TS (`ts-go`), haskell
 * **Markup:** Markdown (`vim-markdown` + `markdown-preview`), Typst (`typst-lsp`)
 
 ### 3.4 OS-Specific Shells
 
-* **Windows:** PowerShell
+* **Windows:** nushell
 * **Linux:** Fish shell
 * Configured via Neovim’s `shell` and `shellcmdflag` options
 
@@ -96,3 +95,6 @@ Redesign a **single Neovim instance** optimized for coding, professional documen
 * Users can replace ASCII art in the dashboard for personal branding
 * Shell integration ensures consistent terminal behavior on both Windows and Linux
 
+REMEMBER SOC
+I want the text editor to look like its in zen mode all the time.
+codex resume 019d69c0-7c1b-7401-9628-0f50ce7771fa

@@ -5,22 +5,19 @@ vim.diagnostic.config({
   underline = true,
   update_in_insert = false,
   virtual_text = false,
-  signs = true,
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = " ",
+      [vim.diagnostic.severity.WARN] = " ",
+      [vim.diagnostic.severity.HINT] = " ",
+      [vim.diagnostic.severity.INFO] = " ",
+    },
+  },
   float = {
     border = "rounded",
     source = "if_many",
   },
 })
-
-for type, icon in pairs({
-  Error = " ",
-  Warn = " ",
-  Hint = "󰌶 ",
-  Info = " ",
-}) do
-  local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-end
 
 function M.capabilities()
   local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -52,7 +49,7 @@ local function float_opts(kind)
   }
 end
 
-local function open_line_diagnostics()
+function M.show_line_diagnostics()
   local line = vim.api.nvim_win_get_cursor(0)[1] - 1
   local diagnostics = vim.diagnostic.get(0, { lnum = line })
 
@@ -70,49 +67,56 @@ end
 
 function M.hover()
   local bufnr = vim.api.nvim_get_current_buf()
-  local clients = vim.lsp.get_clients({
-    bufnr = bufnr,
-    method = "textDocument/hover",
-  })
+  local clients = vim.lsp.get_clients({ bufnr = bufnr })
 
   if #clients == 0 then
-    if not open_line_diagnostics() then
-      vim.cmd.normal({ args = { "K" }, bang = true })
+    if not M.show_line_diagnostics() then
+      vim.notify("No hover information available", vim.log.levels.INFO)
     end
     return
   end
 
   local params = vim.lsp.util.make_position_params(0, "utf-8")
 
-  vim.lsp.buf_request_all(bufnr, "textDocument/hover", params, function(results)
-    local lines
+  local remaining = #clients
+  local responded = false
 
-    for _, response in pairs(results or {}) do
-      local result = response.result
-      if result and result.contents then
+  for _, client in ipairs(clients) do
+    local ok, res = pcall(client.request, client, "textDocument/hover", params, function(err, result)
+      if responded then return end
+
+      if not err and result and result.contents then
+        responded = true
         local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
         markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
 
-        if not vim.tbl_isempty(markdown_lines) then
-          lines = markdown_lines
-          break
+        if #markdown_lines > 0 then
+          local opts = float_opts("Hover")
+          local winid = vim.lsp.util.open_floating_preview(markdown_lines, "markdown", opts)
+          if winid and vim.api.nvim_win_is_valid(winid) then
+            vim.api.nvim_win_set_option(winid, "wrap", true)
+          end
+          return
+        end
+      end
+
+      remaining = remaining - 1
+      if remaining == 0 and not responded then
+        if not M.show_line_diagnostics() then
+          vim.notify("No hover information available", vim.log.levels.INFO)
+        end
+      end
+    end)
+
+    if not ok then
+      remaining = remaining - 1
+      if remaining == 0 and not responded then
+        if not M.show_line_diagnostics() then
+          vim.notify("No hover information available", vim.log.levels.INFO)
         end
       end
     end
-
-    if lines then
-      local opts = float_opts("Hover")
-      local float_bufnr = vim.lsp.util.open_floating_preview(lines, "markdown", opts)
-      if float_bufnr then
-        vim.bo[float_bufnr].modifiable = false
-      end
-      return
-    end
-
-    if not open_line_diagnostics() then
-      vim.cmd.normal({ args = { "K" }, bang = true })
-    end
-  end)
+  end
 end
 
 function M.signature_help()

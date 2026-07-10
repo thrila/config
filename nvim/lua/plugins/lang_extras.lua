@@ -11,19 +11,19 @@ return {
     end,
   },
   {
-    "iamcco/markdown-preview.nvim",
+    "ellisonleao/glow.nvim",
     ft = "markdown",
-    build = function()
-      vim.fn["mkdp#util#install"]()
-    end,
-    init = function()
-      vim.g.mkdp_auto_start = 0
-      vim.g.mkdp_echo_preview_url = 1
-      vim.g.mkdp_theme = "dark"
-    end,
+    cmd = "Glow",
+    opts = {
+      width = 120,
+      height = 80,
+      border = "rounded",
+    },
   },
   {
-    "kaarmu/typst.vim",
-    ft = "typst",
+    "chomosuke/typst-preview.nvim",
+    lazy = false,
+    version = "1.*",
+    opts = {},
   },
 }

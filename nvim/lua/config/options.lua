@@ -78,7 +78,12 @@ vim.o.foldlevelstart = 99
 vim.o.foldlevel = 99
 
 if vim.g.is_windows then
-  if vim.fn.executable("powershell") == 1 then
+  if vim.fn.executable("nu") == 1 then
+    opt.shell = "nu"
+    opt.shellcmdflag = "-c"
+    opt.shellquote = ""
+    opt.shellxquote = ""
+  elseif vim.fn.executable("powershell") == 1 then
     opt.shell = "powershell"
     opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new(); $PSDefaultParameterValues['Out-File:Encoding']='utf8';"
     opt.shellquote = ""

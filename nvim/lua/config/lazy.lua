@@ -28,7 +28,7 @@ require("lazy").setup({
   spec = {
     { import = "plugins" },
   },
-  install = { colorscheme = { "gruvbox" } },
+  install = { colorscheme = { "guts" } },
   checker = { enabled = false },
   change_detection = { notify = false },
   ui = {
