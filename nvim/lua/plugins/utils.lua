@@ -1,7 +1,10 @@
 return {
   {
     "wakatime/vim-wakatime",
-    lazy = false,
+    event = "CursorHold",
+    init = function()
+      vim.g.wakatime_disable_command_line = 1
+    end,
   },
   {
     "rcarriga/nvim-notify",

@@ -53,6 +53,7 @@ return {
       ensure_installed = {
         "bash",
         "c",
+        "haskell",
         "cpp",
         "css",
         "html",
@@ -111,7 +112,9 @@ return {
     opts = {
       ensure_installed = {
         "clangd",
+        "cssls",
         "denols",
+        "hls",
         "intelephense",
         "lua_ls",
         "marksman",
@@ -129,7 +132,8 @@ return {
 
       local function resolve_rust_analyzer()
         local cargo_home = vim.env.CARGO_HOME or (vim.fn.expand("~") .. "/.cargo")
-        local cargo_bin = cargo_home .. (vim.fn.has("win32") == 1 and "/bin/rust-analyzer.exe" or "/bin/rust-analyzer")
+        local cargo_bin = cargo_home
+          .. (vim.fn.has("win32") == 1 and "/bin/rust-analyzer.exe" or "/bin/rust-analyzer")
 
         if vim.fn.filereadable(cargo_bin) == 1 then
           return cargo_bin
@@ -160,6 +164,7 @@ return {
 
       local servers = {
         clangd = {},
+        cssls = {},
         denols = {
           root_dir = function(bufnr, on_dir)
             local dir = root(bufnr, { "deno.json", "deno.jsonc", "deno.lock" })
@@ -168,6 +173,21 @@ return {
             end
           end,
           single_file_support = false,
+        },
+        hls = {
+          cmd = { "haskell-language-server-wrapper", "--lsp" },
+          root_dir = function(bufnr, on_dir)
+            on_dir(root(bufnr, {
+              "*.cabal",
+              "stack.yaml",
+              "cabal.project",
+              "package.yaml",
+              "hie.yaml",
+              "cabal.project.local",
+              ".git",
+            }) or vim.fn.getcwd())
+          end,
+          single_file_support = true,
         },
         intelephense = {
           root_dir = function(bufnr, on_dir)
@@ -238,8 +258,7 @@ return {
               "bun.lock",
             }
 
-            root_markers = vim.fn.has("nvim-0.11.3") == 1
-                and { root_markers, { ".git" } }
+            root_markers = vim.fn.has("nvim-0.11.3") == 1 and { root_markers, { ".git" } }
               or vim.list_extend(root_markers, { ".git" })
 
             local deno_root = root(bufnr, { "deno.json", "deno.jsonc" })
@@ -348,11 +367,13 @@ return {
       formatters_by_ft = {
         c = { "clang_format" },
         cpp = { "clang_format" },
+        haskell = { "fourmolu" },
         javascript = { "prettierd", "prettier" },
         javascriptreact = { "prettierd", "prettier" },
         json = { "prettierd", "prettier" },
         lua = { "stylua" },
         markdown = { "prettierd", "prettier" },
+        php = { "php-cs-fixer" },
         python = { "ruff_format", "black" },
         rust = { "rustfmt" },
         typescript = { "prettierd", "prettier" },

@@ -94,11 +94,14 @@ for index = 1, 4 do
 end
 
 map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
+map("n", "<leader>oc", "<cmd>OpenCode<cr>", { desc = "OpenCode" })
+map("n", "<leader>ww", "<cmd>WebSearch<cr>", { desc = "Web search (DuckDuckGo)" })
 map("n", "<leader>th", "<cmd>tabprevious<cr>", { desc = "Previous tab" })
 map("n", "<leader>tl", "<cmd>tabnext<cr>", { desc = "Next tab" })
 map("n", "<leader>to", "<cmd>tabnew<cr>", { desc = "New tab" })
 map("n", "<leader>tx", "<cmd>tabclose<cr>", { desc = "Close tab" })
-map("n", "<leader>tt", "<cmd>TermNew<cr>", { desc = "New terminal" })
+map("n", "<leader>tt", "<cmd>TermNew<cr>", { desc = "New terminal (split)" })
+map("n", "<leader>tT", "<cmd>TermHere<cr>", { desc = "New terminal (buffer)" })
 map("n", "<leader>tn", "<cmd>NoNeckPain<cr>", { desc = "Toggle centered layout" })
 map("n", "<leader>vc", "<cmd>VenvSelectCached<cr>", { desc = "Cached Python env" })
 map("n", "<leader>vi", "<cmd>VenvCurrent<cr>", { desc = "Active Python env" })
@@ -106,6 +109,18 @@ map("n", "<leader>vp", "<cmd>VenvProject<cr>", { desc = "Project .venv" })
 map("n", "<leader>vs", "<cmd>VenvSelect<cr>", { desc = "Select Python env" })
 map("n", "<leader>vu", "<cmd>UvSync<cr>", { desc = "uv sync" })
 map("n", "<leader>zz", "<cmd>ZenMode<cr>", { desc = "Toggle zen mode" })
+
+map("n", "<leader>br", function()
+  require("config.build").run()
+end, { desc = "Run project" })
+
+map("n", "<leader>bb", function()
+  require("config.build").build()
+end, { desc = "Build project" })
+
+map("n", "<leader>bt", function()
+  require("config.build").test()
+end, { desc = "Test project" })
 
 map("n", "<leader>tm", function()
   load_neotest().run.run()
@@ -119,7 +134,7 @@ map("n", "<leader>ts", function()
   load_neotest().summary.toggle()
 end, { desc = "Test summary" })
 
-map("n", "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", { desc = "Markdown preview" })
+map("n", "<leader>mg", "<cmd>Glow<cr>", { desc = "Markdown preview (Glow)" })
 map("n", "<leader>li", "<cmd>checkhealth vim.lsp<cr>", { desc = "LSP info" })
 map("n", "<leader>lR", "<cmd>lsp restart<cr>", { desc = "Restart LSP" })
 

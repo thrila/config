@@ -20,14 +20,19 @@ return {
       delay = 200,
       preset = "modern",
       spec = {
+        { "<leader>b", group = "build" },
         { "<leader>f", group = "find" },
         { "<leader>l", group = "lsp" },
         { "<leader>L", group = "local" },
         { "<leader>m", group = "markdown" },
         { "<leader>p", group = "plugins" },
         { "<leader>s", group = "search" },
+        { "<leader>g", group = "git" },
+        { "<leader>o", group = "opencode" },
+        { "<leader>s", group = "search" },
         { "<leader>t", group = "tools" },
         { "<leader>v", group = "venv" },
+        { "<leader>w", group = "web" },
       },
     },
   },
@@ -93,7 +98,9 @@ return {
     event = "VeryLazy",
     opts = {
       options = {
-        theme = "gruvbox",
+        theme = function()
+          return require("config.lualine_theme").get()
+        end,
         globalstatus = true,
         component_separators = "",
         section_separators = "",
@@ -116,10 +123,23 @@ return {
               return vim.bo.filetype == "python" and require("config.python").statusline() ~= ""
             end,
           },
+          function()
+            local clients = vim.lsp.get_clients({ bufnr = 0 })
+            if #clients == 0 then return "" end
+            local names = {}
+            for _, c in ipairs(clients) do
+              names[#names + 1] = c.name
+            end
+            return table.concat(names, " ")
+          end,
           "filetype",
         },
         lualine_y = { "progress" },
-        lualine_z = { "location" },
+        lualine_z = {
+          function()
+            return "ジュジュ"
+          end,
+        },
       },
     },
   },
@@ -158,6 +178,24 @@ return {
       window = {
         width = 110,
       },
+      on_open = function()
+        vim.wo.relativenumber = true
+      end,
+    },
+  },
+  {
+    "rmagatti/auto-session",
+    lazy = false,
+    opts = {
+      suppressed_dirs = { "~/", "~/Downloads", "/" },
+      session_lens = {
+        load_on_setup = false,
+      },
+    },
+    keys = {
+      { "<leader>sr", "<cmd>SessionSearch<cr>", desc = "Search sessions" },
+      { "<leader>sw", "<cmd>SessionSave<cr>", desc = "Save session" },
+      { "<leader>sd", "<cmd>SessionDelete<cr>", desc = "Delete session" },
     },
   },
 }
