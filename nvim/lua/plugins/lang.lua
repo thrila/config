@@ -53,9 +53,11 @@ return {
       ensure_installed = {
         "bash",
         "c",
-        "haskell",
         "cpp",
         "css",
+        "go",
+        "gomod",
+        "gowork",
         "html",
         "javascript",
         "json",
@@ -114,11 +116,12 @@ return {
         "clangd",
         "cssls",
         "denols",
-        "hls",
+        "gopls",
         "intelephense",
         "lua_ls",
         "marksman",
         "pyright",
+        "ruff",
         "ts_ls",
         "tinymist",
       },
@@ -165,6 +168,26 @@ return {
       local servers = {
         clangd = {},
         cssls = {},
+        gopls = {
+          settings = {
+            gopls = {
+              analyses = {
+                unusedparams = true,
+                shadow = true,
+              },
+              codelenses = {
+                generate = true,
+                gc_details = true,
+                test = true,
+                tidy = true,
+              },
+              usePlaceholders = true,
+              completeUnimported = true,
+              staticcheck = true,
+              gofumpt = true,
+            },
+          },
+        },
         denols = {
           root_dir = function(bufnr, on_dir)
             local dir = root(bufnr, { "deno.json", "deno.jsonc", "deno.lock" })
@@ -173,21 +196,6 @@ return {
             end
           end,
           single_file_support = false,
-        },
-        hls = {
-          cmd = { "haskell-language-server-wrapper", "--lsp" },
-          root_dir = function(bufnr, on_dir)
-            on_dir(root(bufnr, {
-              "*.cabal",
-              "stack.yaml",
-              "cabal.project",
-              "package.yaml",
-              "hie.yaml",
-              "cabal.project.local",
-              ".git",
-            }) or vim.fn.getcwd())
-          end,
-          single_file_support = true,
         },
         intelephense = {
           root_dir = function(bufnr, on_dir)
@@ -234,6 +242,23 @@ return {
               },
             },
           },
+        },
+        ruff = {
+          root_dir = function(bufnr, on_dir)
+            on_dir(root(bufnr, {
+              "pyproject.toml",
+              "uv.lock",
+              ".venv",
+              "requirements.txt",
+              "setup.py",
+              "setup.cfg",
+              "Pipfile",
+              "ruff.toml",
+              ".ruff.toml",
+              ".git",
+            }) or vim.fn.getcwd())
+          end,
+          settings = {},
         },
         rust_analyzer = {
           cmd = { resolve_rust_analyzer() },
@@ -367,14 +392,14 @@ return {
       formatters_by_ft = {
         c = { "clang_format" },
         cpp = { "clang_format" },
-        haskell = { "fourmolu" },
+        go = { "gofumpt", "goimports" },
         javascript = { "prettierd", "prettier" },
         javascriptreact = { "prettierd", "prettier" },
         json = { "prettierd", "prettier" },
         lua = { "stylua" },
         markdown = { "prettierd", "prettier" },
         php = { "php-cs-fixer" },
-        python = { "ruff_format", "black" },
+        python = { "ruff_format" },
         rust = { "rustfmt" },
         typescript = { "prettierd", "prettier" },
         typescriptreact = { "prettierd", "prettier" },
