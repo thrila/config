@@ -5,7 +5,7 @@ local term = require("config.terminal")
 local function root()
   return vim.fs.root(0, {
     "Cargo.toml", "Makefile", "CMakeLists.txt",
-    "stack.yaml", "*.cabal", "cabal.project", "package.yaml",
+    "pyproject.toml", "uv.lock", "requirements.txt",
     ".git",
   }) or vim.fn.getcwd()
 end
@@ -80,41 +80,10 @@ function M.cpp_build()
   build_term(string.format("%s -o %s %s", cxx, out, src))
 end
 
--- ── Haskell ────────────────────────────────────────────────────────────────
+-- ── Python ──────────────────────────────────────────────────────────────────
 
-function M.haskell_build()
-  local r = root()
-  if vim.fn.filereadable(r .. "/stack.yaml") == 1 then
-    build_term("stack build")
-  elseif vim.fn.glob(r .. "/*.cabal") ~= "" or vim.fn.filereadable(r .. "/cabal.project") == 1 then
-    build_term("cabal build")
-  else
-    local src = filename()
-    build_term("ghc -o " .. basename() .. " " .. src)
-  end
-end
-
-function M.haskell_run()
-  local r = root()
-  if vim.fn.filereadable(r .. "/stack.yaml") == 1 then
-    build_term("stack run")
-  elseif vim.fn.glob(r .. "/*.cabal") ~= "" or vim.fn.filereadable(r .. "/cabal.project") == 1 then
-    build_term("cabal run")
-  else
-    local out = basename()
-    build_term("./" .. out)
-  end
-end
-
-function M.haskell_test()
-  local r = root()
-  if vim.fn.filereadable(r .. "/stack.yaml") == 1 then
-    build_term("stack test")
-  elseif vim.fn.glob(r .. "/*.cabal") ~= "" then
-    build_term("cabal test")
-  else
-    vim.notify("No test runner found (need stack.yaml or *.cabal)", vim.log.levels.WARN)
-  end
+function M.python_test()
+  build_term("uv run pytest")
 end
 
 -- ── Dispatch ───────────────────────────────────────────────────────────────
@@ -127,8 +96,6 @@ function M.run()
     M.c_run()
   elseif ft == "cpp" then
     M.cpp_run()
-  elseif ft == "haskell" then
-    M.haskell_run()
   else
     vim.notify("No run handler for filetype: " .. ft, vim.log.levels.WARN)
   end
@@ -142,8 +109,6 @@ function M.build()
     M.c_build()
   elseif ft == "cpp" then
     M.cpp_build()
-  elseif ft == "haskell" then
-    M.haskell_build()
   else
     vim.notify("No build handler for filetype: " .. ft, vim.log.levels.WARN)
   end
@@ -153,8 +118,8 @@ function M.test()
   local ft = vim.bo.filetype
   if ft == "rust" then
     M.cargo_test()
-  elseif ft == "haskell" then
-    M.haskell_test()
+  elseif ft == "python" then
+    M.python_test()
   else
     vim.notify("No test handler for filetype: " .. ft, vim.log.levels.WARN)
   end

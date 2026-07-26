@@ -46,6 +46,7 @@ opt.ttimeoutlen = 0
 opt.confirm = true
 
 opt.hidden = true
+opt.autoread = true
 opt.mouse = "a"
 opt.splitbelow = true
 opt.splitright = true
@@ -65,7 +66,7 @@ opt.fillchars = {
 
 opt.list = true
 opt.listchars = {
-  tab = ">>",
+  tab = "··",
   trail = ".",
   extends = ">",
   precedes = "<",

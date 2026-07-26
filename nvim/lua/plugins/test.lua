@@ -11,8 +11,8 @@ return {
     dependencies = {
       "antoinemadec/FixCursorHold.nvim",
       "nvim-lua/plenary.nvim",
-      "mrcjkb/neotest-haskell",
       "nvim-neotest/neotest-jest",
+      "nvim-neotest/neotest-go",
       "nvim-neotest/neotest-python",
       {
         "nvim-neotest/nvim-nio",
@@ -24,14 +24,15 @@ return {
     config = function()
       require("neotest").setup({
         adapters = {
-          require("neotest-haskell")({
-            build_side = "stack",
-            frameworks = { "hspec", "tasty", "sydtest" },
-          }),
           require("neotest-jest")({
             cwd = function()
               return vim.fn.getcwd()
             end,
+          }),
+          require("neotest-go")({
+            experimental = {
+              test_table = true,
+            },
           }),
           require("neotest-python")({}),
           require("neotest-rust")({}),

@@ -7,10 +7,10 @@ vim.diagnostic.config({
   virtual_text = false,
   signs = {
     text = {
-      [vim.diagnostic.severity.ERROR] = " ",
-      [vim.diagnostic.severity.WARN] = " ",
-      [vim.diagnostic.severity.HINT] = " ",
-      [vim.diagnostic.severity.INFO] = " ",
+      [vim.diagnostic.severity.ERROR] = "󰅙",
+      [vim.diagnostic.severity.WARN] = "󰀪",
+      [vim.diagnostic.severity.HINT] = "󰌶",
+      [vim.diagnostic.severity.INFO] = "󰋽",
     },
   },
   float = {
@@ -148,6 +148,15 @@ function M.on_attach(client, bufnr)
     map("<leader>lf", function()
       require("conform").format({ async = true, lsp_fallback = true })
     end, "Format buffer")
+  end
+
+  if client.name == "ruff" then
+    map("<leader>lo", function()
+      vim.lsp.buf.code_action({
+        context = { only = { "source.organizeImports" } },
+        apply = true,
+      })
+    end, "Organize imports (ruff)")
   end
 end
 
