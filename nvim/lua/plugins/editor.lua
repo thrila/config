@@ -1,114 +1,202 @@
 return {
   {
-    "folke/trouble.nvim",
-    opts = {}, -- for default options, refer to the configuration section for custom setup.
-    cmd = "Trouble",
-        -- stylua: ignore
-        keys = {
-            { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>",                        desc = "Diagnostics (Trouble)", },
-            { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",           desc = "Buffer Diagnostics (Trouble)", },
-            { "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>",                desc = "Symbols (Trouble)", },
-            { "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", desc = "LSP Definitions / references / ... (Trouble)", },
-            { "<leader>xL", "<cmd>Trouble loclist toggle<cr>",                            desc = "Location List (Trouble)", },
-            { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>",                             desc = "Quickfix List (Trouble)", },
-        },
+    "numToStr/Comment.nvim",
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {},
   },
-
   {
-    "ThePrimeagen/harpoon",
-    branch = "harpoon2",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    opts = {
-      settings = {
-        save_on_toggle = true,
-        sync_on_ui_close = true,
-      },
-    },
-        -- stylua: ignore
-        config = function(_, opts)
-            local harpoon = require("harpoon")
-            harpoon:setup(opts)
-
-            -- basic mappings
-            local map = vim.keymap.set
-            map("n", "<leader>ha", function() harpoon:list():add() end, { desc = "Harpoon Add File" })
-            map("n", "<leader>h", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, { desc = "Harpoon Menu" })
-            -- direct navigation (slots 1-4)
-            map("n", "<leader>1", function() harpoon:list():select(1) end, { desc = "Harpoon File 1" })
-            map("n", "<leader>2", function() harpoon:list():select(2) end, { desc = "Harpoon File 2" })
-            map("n", "<leader>3", function() harpoon:list():select(3) end, { desc = "Harpoon File 3" })
-            map("n", "<leader>4", function() harpoon:list():select(4) end, { desc = "Harpoon File 4" })
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    keys = {
+      {
+        "<leader>?",
+        function()
+          require("which-key").show({ global = false })
         end,
-  },
-
-  {
-    "folke/lazydev.nvim",
-    ft = "lua",
-    cmd = "LazyDev",
+        desc = "Buffer local keymaps",
+      },
+    },
     opts = {
-      library = {
-        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-        { path = "LazyVim", words = { "LazyVim" } },
-        { path = "snacks.nvim", words = { "Snacks" } },
-        -- { path = "lazy.nvim", words = { "LazyVim" } },
+      delay = 200,
+      preset = "modern",
+      spec = {
+        { "<leader>b", group = "build" },
+        { "<leader>f", group = "find" },
+        { "<leader>g", group = "git" },
+        { "<leader>h", group = "harpoon" },
+        { "<leader>l", group = "lsp" },
+        { "<leader>L", group = "local" },
+        { "<leader>m", group = "markdown" },
+        { "<leader>o", group = "opencode" },
+        { "<leader>p", group = "plugins" },
+        { "<leader>s", group = "search" },
+        { "<leader>t", group = "tools" },
+        { "<leader>v", group = "venv" },
+        { "<leader>w", group = "web" },
+        { "<leader>z", group = "zen" },
       },
     },
   },
-
   {
-    "sphamba/smear-cursor.nvim",
+    "shortcuts/no-neck-pain.nvim",
+    version = "*",
+    lazy = false,
+    opts = {
+      width = 110,
+      minSideBufferWidth = 8,
+      autocmds = {
+        enableOnVimEnter = "safe",
+        reloadOnColorSchemeChange = true,
+      },
+      mappings = {
+        enabled = false,
+      },
+      integrations = {
+        neotest = {
+          position = "right",
+          reopen = true,
+        },
+      },
+      buffers = {
+        wo = {
+          cursorline = false,
+          foldcolumn = "0",
+          list = false,
+          number = false,
+          relativenumber = false,
+          signcolumn = "no",
+          wrap = false,
+        },
+      },
+    },
+  },
+  {
+    "nvimdev/dashboard-nvim",
+    event = "VimEnter",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      local logo = require("config.logo")
+
+      require("dashboard").setup({
+        theme = "hyper",
+        config = {
+          header = logo.header,
+          shortcut = {
+            { desc = " New file", key = "n", action = "ene | startinsert" },
+            { desc = " Find file", key = "f", action = "Telescope find_files" },
+            { desc = " Live grep", key = "g", action = "Telescope live_grep" },
+            { desc = " Help tags", key = "h", action = "Telescope help_tags" },
+          },
+          project = { enable = false },
+          mru = { enable = false },
+          footer = logo.footer(),
+        },
+      })
+    end,
+  },
+  {
+    "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     opts = {
-      -- Smear cursor when switching buffers or windows.
-      smear_between_buffers = true,
-
-      -- Smear cursor when moving within line or to neighbor lines.
-      min_horizontal_distance_smear = 25,
-      min_vertical_distance_smear = 25,
-
-      -- Draw the smear in buffer space instead of screen space when scrolling
-      scroll_buffer_space = true,
-
-      -- Smear cursor in insert mode.
-      smear_insert_mode = false,
-
-      -- How fast the smear's head moves towards the target.
-      stiffness = 0.6,
-
-      -- How fast the smear's tail moves towards the target.
-      trailing_stiffness = 0.45,
-    },
-  },
-
-  {
-    "hrsh7th/vim-vsnip",
-  },
-
-  {
-    "akinsho/git-conflict.nvim",
-    version = "*",
-    config = true,
-    opts = {
-      default_mappings = true, -- disable buffer local mapping created by this plugin
-      default_commands = true, -- disable commands created by this plugin
-      disable_diagnostics = false, -- This will disable the diagnostics in a buffer whilst it is conflicted
-      list_opener = "copen", -- command or function to open the conflicts list
-      highlights = { -- They must have background color, otherwise the default color will be used
-        incoming = "DiffAdd",
-        current = "DiffText",
+      options = {
+        theme = function()
+          return require("config.lualine_theme").get()
+        end,
+        globalstatus = true,
+        component_separators = "",
+        section_separators = "",
+      },
+      sections = {
+        lualine_a = { "mode" },
+        lualine_b = { "branch" },
+        lualine_c = {
+          {
+            "filename",
+            path = 1,
+          },
+        },
+        lualine_x = {
+          {
+            function()
+              return require("config.python").statusline()
+            end,
+            cond = function()
+              return vim.bo.filetype == "python" and require("config.python").statusline() ~= ""
+            end,
+          },
+          function()
+            local clients = vim.lsp.get_clients({ bufnr = 0 })
+            if #clients == 0 then return "" end
+            local names = {}
+            for _, c in ipairs(clients) do
+              names[#names + 1] = c.name
+            end
+            return table.concat(names, " ")
+          end,
+          "filetype",
+        },
+        lualine_y = { "progress" },
+        lualine_z = {
+          function()
+            return "ジュジュ"
+          end,
+        },
       },
     },
   },
-
   {
-    "hedyhli/outline.nvim",
-    lazy = true,
-    cmd = { "Outline", "OutlineOpen" },
-    keys = { -- Example mapping to toggle outline
-      { "<leader>o", "<cmd>Outline<CR>", desc = "Toggle outline" },
-    },
+    "lewis6991/gitsigns.nvim",
+    event = { "BufReadPre", "BufNewFile" },
     opts = {
-      -- Your setup opts here
+      signs = {
+        add = { text = "+" },
+        change = { text = "~" },
+        delete = { text = "_" },
+        topdelete = { text = "^" },
+        changedelete = { text = "~" },
+      },
+    },
+  },
+  {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    opts = {},
+  },
+  {
+    "folke/todo-comments.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {
+      highlight = {
+        comments_only = true,
+      },
+    },
+  },
+  {
+    "folke/zen-mode.nvim",
+    cmd = "ZenMode",
+    opts = {
+      window = {
+        width = 110,
+      },
+      on_open = function()
+        vim.wo.relativenumber = true
+      end,
+    },
+  },
+  {
+    "rmagatti/auto-session",
+    lazy = false,
+    opts = {
+      suppressed_dirs = { "~/", "~/Downloads", "/" },
+      session_lens = {
+        load_on_setup = false,
+      },
+    },
+    keys = {
+      { "<leader>sr", "<cmd>SessionSearch<cr>", desc = "Search sessions" },
+      { "<leader>sw", "<cmd>SessionSave<cr>", desc = "Save session" },
+      { "<leader>sd", "<cmd>SessionDelete<cr>", desc = "Delete session" },
     },
   },
 }
